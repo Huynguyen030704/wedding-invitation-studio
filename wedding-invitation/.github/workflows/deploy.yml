@@ -1,0 +1,75 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: ["main"] # Hoặc "master" tùy tên branch chính của bạn
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8 # Bạn có thể thay đổi version pnpm phù hợp
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Thư mục chứa file index.html sau khi build. 
+          # Vite dùng 'dist', Create React App dùng 'build'
+          path: './dist' 
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+      ```
+
+---
+
+### Bước 3: Thiết lập trên GitHub
+Sau khi đã tạo file và `git push` code lên GitHub, bạn thực hiện nốt bước này:
+
+1.  Truy cập vào **Settings** trên thanh menu của Repository.
+2.  Chọn mục **Pages** ở cột bên trái.
+3.  Tại phần **Build and deployment** > **Source**, bạn đổi từ "Deploy from a branch" sang **"GitHub Actions"**.
+
+
+
+---
+
+### Bước 4: Kiểm tra kết quả
+1.  Chuyển sang tab **Actions** trên GitHub.
+2.  Bạn sẽ thấy một tiến trình (workflow) đang chạy. Khi nó hiện tích xanh ✅, nghĩa là web đã lên sóng.
+3.  Quay lại tab **Settings > Pages**, bạn sẽ thấy đường link trang web của mình.
+
+---
+
+### Một vài lưu ý nhỏ:
+* **Thư mục Build:** Nếu bạn không dùng Vite mà dùng công cụ khác, hãy kiểm tra xem sau khi chạy `pnpm run build` nó tạo ra thư mục tên là `dist` hay `build`, sau đó sửa lại ở dòng `path: './dist'` trong file `.yml` cho đúng.
+* **Lỗi 404 khi F5:** Nếu bạn dùng `react-router-dom`, khi nhấn F5 ở các trang con sẽ bị lỗi 404. Cách nhanh nhất để sửa là đổi sang dùng `HashRouter` trong code React của bạn.
+
+**Bạn đã nắm được tên Repository của mình chưa?** Nếu rồi, hãy thay nó vào phần `base` ở Bước 1 nhé! Bạn có muốn mình hướng dẫn cách chuyển đổi sang `HashRouter` nếu dự án có nhiều trang không?

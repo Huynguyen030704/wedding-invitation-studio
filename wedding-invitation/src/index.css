@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@import url("https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap");
+
+@theme {
+  --font-cursive: "Great Vibes", cursive;
+  --font-serif: "Playfair Display", serif;
+  --color-wedding-gold: #b4975a;
+  --color-wedding-cream: #fdfbf7;
+
+  /* Khai báo Keyframes chuẩn v4 */
+  @keyframes fall {
+    0% {
+      transform: translateY(-10vh) translateX(0) rotate(0deg);
+      opacity: 0;
+    }
+    10% {
+      opacity: 0.8;
+    }
+    90% {
+      opacity: 0.8;
+    }
+    100% {
+      transform: translateY(100vh) translateX(100px) rotate(360deg);
+      opacity: 0;
+    }
+  }
+
+  @keyframes sway {
+    0% {
+      transform: translateX(0px) rotate(0deg);
+    }
+    50% {
+      transform: translateX(50px) rotate(20deg);
+    }
+    100% {
+      transform: translateX(0px) rotate(-20deg);
+    }
+  }
+
+  /* Khai báo Animation */
+  --animate-petal-fall: fall 10s linear infinite;
+  --animate-petal-sway: sway 3s ease-in-out infinite alternate;
+}
+
+/* Các class bổ trợ */
+@layer components {
+  .card-border {
+    @apply relative border border-[var(--color-wedding-gold)]/30 p-8 md:p-16 bg-white/50 backdrop-blur-sm shadow-xl;
+  }
+}
