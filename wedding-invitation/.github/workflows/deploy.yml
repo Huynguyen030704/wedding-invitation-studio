@@ -29,24 +29,21 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
+        working-directory: ./wedding-invitation # Thêm dòng này
 
       - name: Build
         run: pnpm run build
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
+        working-directory: ./wedding-invitation # Thêm dòng này
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Thư mục chứa file index.html sau khi build. 
-          # Vite dùng 'dist', Create React App dùng 'build'
-          path: './dist' 
+          # Trỏ đúng vào thư mục dist bên trong thư mục con
+          path: './wedding-invitation/dist'
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-      ```
 
 ---
 
