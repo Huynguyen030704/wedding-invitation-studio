@@ -12,11 +12,11 @@ const App = () => {
     secs: 0,
   });
   const [isOpen, setIsOpen] = useState(false); // State kiểm tra đã mở thiệp chưa
-  // const isName = { trai: "Huy", gai: "Trinh" };
+  const isName = { trai: "Huy", gai: "Trinh" };
+  const isFullName = { trai: "Nhựt Huy", gai: "Mai Trinh" };
   // const isFullName = { trai: "Nhựt Huy", gai: "Mai Trinh" };
-  // const isFullName = { trai: "Nhựt Huy", gai: "Mai Trinh" };
-  const isName = { trai: "A", gai: "B" };
-  const isFullName = { trai: "Nhựt A", gai: "Mai B" };
+  // const isName = { trai: "A", gai: "B" };
+  // const isFullName = { trai: "Nhựt A", gai: "Mai B" };
 
   useEffect(() => {
     const target = new Date("2026-03-22T09:00:00");
@@ -246,10 +246,10 @@ const App = () => {
                 </h3>
                 <div className="pt-4 space-y-2">
                   <p className="text-lg font-bold text-stone-800">
-                    Ông: NGUYỄN VĂN A
+                    Ông: NGUYỄN THANH PHONG
                   </p>
                   <p className="text-lg font-bold text-stone-800">
-                    Bà: TRẦN THỊ B
+                    Bà: TRƯƠNG THỊ NGỌC PHƯƠNG
                   </p>
                   <p className="text-stone-500 italic text-sm">
                     (Thân phụ & Thân mẫu)
@@ -274,10 +274,10 @@ const App = () => {
                 </h3>
                 <div className="pt-4 space-y-2">
                   <p className="text-lg font-bold text-stone-800">
-                    Ông: LÊ VĂN C
+                    Ông: PHẠM VĂN TIẾN
                   </p>
                   <p className="text-lg font-bold text-stone-800">
-                    Bà: PHẠM THỊ D
+                    Bà: ĐỖ THỊ TUYẾT MAI
                   </p>
                   <p className="text-stone-500 italic text-sm">
                     (Thân phụ & Thân mẫu)
