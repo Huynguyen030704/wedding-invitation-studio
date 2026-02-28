@@ -159,6 +159,17 @@ const RSVPList = () => {
                         {rsvp.guest_of === "groom" ? "Nhà Trai" : "Nhà Gái"}
                       </span>
                     </td>
+                    <td className="px-8 py-6 text-sm italic font-sans">
+                      <span
+                        className={
+                          rsvp.type === "Đính Hôn"
+                            ? "text-indigo-500"
+                            : "text-purple-500"
+                        }
+                      >
+                        {rsvp.type}
+                      </span>
+                    </td>
                     <td className="px-8 py-6 text-stone-400 text-sm italic font-sans">
                       {new Date(rsvp.created_at).toLocaleString("vi-VN")}
                     </td>
