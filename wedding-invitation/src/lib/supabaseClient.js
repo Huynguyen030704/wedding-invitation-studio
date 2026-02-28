@@ -3,12 +3,12 @@ import { createClient } from "@supabase/supabase-js";
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim();
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim();
 
-console.log(supabaseUrl, supabaseAnonKey);
 if (!supabaseUrl || !supabaseUrl.startsWith("http")) {
-  console.error(
-    "❌ Supabase URL is missing or invalid! \n" +
-      "Please check your .env file or GitHub Secrets (VITE_SUPABASE_URL).",
-  );
+  console.warn("⚠️ Supabase credentials missing or invalid.");
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Khởi tạo an toàn: nếu thiếu URL thì export null chứ không gọi createClient
+export const supabase =
+  supabaseUrl && supabaseUrl.startsWith("http")
+    ? createClient(supabaseUrl, supabaseAnonKey)
+    : null;
