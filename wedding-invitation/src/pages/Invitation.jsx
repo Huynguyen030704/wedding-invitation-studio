@@ -17,8 +17,8 @@ const Invitation = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [audio] = useState(
-    new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"),
-  ); // Placeholder romantic music
+    new Audio(`${import.meta.env.BASE_URL}music/beautiful-in-white.mp3`),
+  );
 
   const isName = { trai: "Huy", gai: "Trinh" };
   const isFullName = { trai: "Nhựt Huy", gai: "Mai Trinh" };
