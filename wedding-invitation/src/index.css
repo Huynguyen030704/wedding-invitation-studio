@@ -38,9 +38,15 @@
     }
   }
 
+  @keyframes slow-zoom {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.1); }
+  }
+
   /* Khai báo Animation */
   --animate-petal-fall: fall 10s linear infinite;
   --animate-petal-sway: sway 3s ease-in-out infinite alternate;
+  --animate-slow-zoom: slow-zoom 20s ease-in-out infinite alternate;
 }
 
 /* Các class bổ trợ */
