@@ -2,13 +2,13 @@ import React from "react";
 import { Carousel, Image } from "antd";
 import { motion } from "framer-motion";
 
+const BASE = import.meta.env.BASE_URL;
 const images = [
-  "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=1200",
-  "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80&w=1200",
-  "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&q=80&w=1200",
-  "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&q=80&w=1200",
-  "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&q=80&w=1200",
-  "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&q=80&w=1200",
+  `${BASE}images/0434.JPG`,
+  `${BASE}images/133A1217.JPG`,
+  `${BASE}images/0429.JPG`,
+  `${BASE}images/133A1254.JPG`,
+  `${BASE}images/133A1331.JPG`,
 ];
 
 const WeddingGallery = () => {
@@ -38,6 +38,7 @@ const WeddingGallery = () => {
                   <Image
                     src={img}
                     alt={`Wedding Photo ${idx + 1}`}
+                    loading="lazy"
                     className="w-full h-full object-cover"
                     preview={{ mask: <div className="text-xs font-sans">Chạm để phóng to</div> }}
                   />
@@ -70,6 +71,7 @@ const WeddingGallery = () => {
                     <Image
                       src={img}
                       alt={`Wedding Photo ${idx + 1}`}
+                      loading="lazy"
                       className="w-full h-full object-cover group-hover:scale-105 transition-all duration-700"
                     />
                   </motion.div>

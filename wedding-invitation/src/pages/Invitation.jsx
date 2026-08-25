@@ -164,7 +164,7 @@ const Invitation = ({ type = "bride" }) => {
             >
               <div className="absolute inset-0 opacity-20">
                 <img
-                  src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80"
+                  src={`${import.meta.env.BASE_URL}images/133A1217.JPG`}
                   className="w-full h-full object-cover"
                   alt=""
                 />
@@ -180,7 +180,7 @@ const Invitation = ({ type = "bride" }) => {
             >
               <div className="absolute inset-0 opacity-20">
                 <img
-                  src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80"
+                  src={`${import.meta.env.BASE_URL}images/133A1331.JPG`}
                   className="w-full h-full object-cover"
                   alt=""
                 />
@@ -193,7 +193,7 @@ const Invitation = ({ type = "bride" }) => {
               transition={{ duration: 0.5 }}
               className="absolute inset-0 z-10 flex items-center justify-center"
             >
-              <div className="text-center bg-white/10 backdrop-blur-md p-10 rounded-full border border-white/20 shadow-2xl">
+              <div className="text-center bg-white/10 backdrop-blur-md px-8 py-10 md:p-12 mx-6 rounded-[2.5rem] md:rounded-[3rem] border border-white/20 shadow-2xl">
                 <motion.div
                   animate={{ scale: [1.5, 1.1, 1.5] }}
                   transition={{ repeat: Infinity, duration: 2 }}
@@ -201,10 +201,10 @@ const Invitation = ({ type = "bride" }) => {
                   <Heart
                     className="mx-auto text-rose-500 mb-4"
                     fill="currentColor"
-                    size={48}
+                    size={44}
                   />
                 </motion.div>
-                <h2 className="font-cursive text-5xl text-amber-200 mb-4">
+                <h2 className="font-cursive text-4xl md:text-5xl text-amber-200 mb-4">
                   {isName.trai} & {isName.gai}
                 </h2>
                 <motion.div
@@ -213,7 +213,7 @@ const Invitation = ({ type = "bride" }) => {
                 >
                   <button
                     onClick={handleOpenInvitation}
-                    className="bg-white text-stone-900 px-10 py-4 rounded-full font-sans tracking-[0.2em] text-xs hover:bg-amber-100 transition-all shadow-xl font-bold cursor-pointer"
+                    className="bg-white text-stone-900 px-8 md:px-10 py-4 rounded-full font-sans tracking-[0.2em] text-xs hover:bg-amber-100 transition-all shadow-xl font-bold cursor-pointer"
                   >
                     CHẠM ĐỂ MỞ THIỆP
                   </button>
@@ -230,7 +230,7 @@ const Invitation = ({ type = "bride" }) => {
         <section className="relative h-dvh flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0 z-0">
             <img
-              src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80"
+              src={`${import.meta.env.BASE_URL}images/133A1281.JPG`}
               className="w-full h-full object-cover object-center animate-slow-zoom"
               alt="Hero"
             />
@@ -325,13 +325,17 @@ const Invitation = ({ type = "bride" }) => {
             </p>
 
             {/* Hiển thị thông tin địa điểm và lịch chi tiết của bên tương ứng */}
-            <div className="bg-white/40 p-8 md:p-12 rounded-2xl border border-amber-100 space-y-6 text-center">
+            <div className="bg-white/40 p-6 md:p-12 rounded-2xl border border-amber-100 space-y-6 text-center">
               <Calendar className="mx-auto text-wedding-gold" size={32} />
               <p className="font-bold text-base tracking-widest text-stone-700 font-sans">
                 THỜI GIAN LÀM LỄ
               </p>
-              <p className="text-2xl text-stone-800 font-bold">
-                {config.locationCalendar}
+              <p className="text-xl md:text-2xl text-stone-800 font-bold leading-snug">
+                {config.locationCalendar.split(" - ").map((part, i) => (
+                  <span key={i} className="block">
+                    {part}
+                  </span>
+                ))}
               </p>
               <p className="text-sm text-stone-500 font-sans italic">
                 {config.locationCalendarLunar}
