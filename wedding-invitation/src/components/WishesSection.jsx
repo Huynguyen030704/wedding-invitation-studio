@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { Form, Input, Button, message, ConfigProvider, theme } from "antd";
-import { Heart, Send } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Form, Input, Button, message, ConfigProvider, Skeleton, Empty } from "antd";
+import { Heart, Send, Quote } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "../lib/supabaseClient";
+import { darkFormTheme, goldButtonClass } from "../lib/formTheme";
+import GoldenDust from "./GoldenDust";
 
 const WishesSection = () => {
   const [wishes, setWishes] = useState([]);
@@ -107,19 +109,24 @@ const WishesSection = () => {
     }
   };
 
+  const fieldLabel = (text) => (
+    <span className="font-sans text-[11px] uppercase tracking-[0.2em] font-semibold text-wedding-champagne">
+      {text}
+    </span>
+  );
+
   return (
-    <section className="py-20 bg-stone-900 text-white relative overflow-hidden">
-      {/* Background Hoa Văn */}
-      <div className="absolute inset-0 opacity-5 pointer-events-none">
-        <Heart
-          size={400}
-          className="absolute -right-20 -bottom-20 text-white"
-        />
+    <section className="py-20 md:py-28 bg-wedding-charcoal text-white relative overflow-hidden">
+      {/* Nền trang trí tự dựng */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_15%,rgba(180,151,90,0.15),transparent_45%),radial-gradient(circle_at_10%_90%,rgba(201,138,134,0.14),transparent_45%)]" />
+        <Heart size={400} className="absolute -right-24 -bottom-24 text-white/[0.03]" />
       </div>
+      <GoldenDust count={14} />
 
       <div className="max-w-6xl mx-auto px-4 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          {/* Cột 1: Danh sách lời chúc chạy chữ */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+          {/* Cột 1: Danh sách lời chúc */}
           <div>
             <motion.div
               initial={{ opacity: 0, x: -30 }}
@@ -127,114 +134,115 @@ const WishesSection = () => {
               viewport={{ once: true }}
               className="mb-8"
             >
+              <p className="eyebrow !text-wedding-champagne mb-3">Yêu thương gửi trao</p>
               <h2 className="text-4xl md:text-5xl font-cursive text-amber-200 mb-2">
                 Hộp Thư Lời Chúc
               </h2>
-              <p className="text-stone-400 text-xs tracking-widest uppercase font-sans font-bold">
-                Những lời yêu thương từ người thân & bạn bè
+              <p className="text-white/50 text-sm font-serif italic">
+                Những lời yêu thương từ người thân &amp; bạn bè.
               </p>
             </motion.div>
 
-            {/* Khối chứa lời chúc */}
-            <div className="h-[350px] overflow-y-auto pr-2 space-y-4 scrollbar-thin scrollbar-thumb-stone-700">
-              {wishes.map((item, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.05 }}
-                  className="bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-sm shadow-md"
-                >
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-bold text-amber-200 text-sm font-sans">
-                      {item.full_name}
-                    </span>
-                    <Heart size={14} className="text-rose-400 fill-rose-400" />
-                  </div>
-                  <p className="text-stone-300 text-sm italic font-serif leading-relaxed">
-                    "{item.wishes}"
-                  </p>
-                </motion.div>
-              ))}
+            {/* Khối chứa lời chúc + hiệu ứng mờ dần ở cạnh */}
+            <div className="relative">
+              <div className="h-[360px] overflow-y-auto pr-3 space-y-4 scroll-elegant">
+                {loading ? (
+                  Array.from({ length: 3 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="bg-white/[0.04] border border-white/10 p-6 rounded-2xl"
+                    >
+                      <Skeleton
+                        active
+                        paragraph={{ rows: 2 }}
+                        title={{ width: "40%" }}
+                      />
+                    </div>
+                  ))
+                ) : wishes.length === 0 ? (
+                  <Empty
+                    description={
+                      <span className="text-white/50 font-sans text-sm">
+                        Chưa có lời chúc nào. Hãy là người đầu tiên!
+                      </span>
+                    }
+                    className="py-16"
+                  />
+                ) : (
+                  wishes.map((item, idx) => (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: Math.min(idx * 0.05, 0.4) }}
+                      className="relative bg-white/[0.05] border border-white/10 p-6 rounded-2xl backdrop-blur-sm shadow-md hover:border-amber-200/30 transition-colors"
+                    >
+                      <Quote
+                        size={28}
+                        className="absolute right-5 top-5 text-white/[0.06]"
+                      />
+                      <div className="flex items-center gap-2 mb-3">
+                        <Heart size={13} className="text-wedding-rose fill-current" />
+                        <span className="font-semibold text-amber-200 text-sm font-sans">
+                          {item.full_name}
+                        </span>
+                      </div>
+                      <p className="text-white/75 text-[15px] italic font-serif leading-relaxed">
+                        &ldquo;{item.wishes}&rdquo;
+                      </p>
+                    </motion.div>
+                  ))
+                )}
+              </div>
+              {/* Fade trên/dưới cho đẹp mép cuộn */}
+              <div className="pointer-events-none absolute inset-x-0 top-0 h-6 bg-gradient-to-b from-wedding-charcoal to-transparent" />
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-wedding-charcoal to-transparent" />
             </div>
           </div>
 
-          {/* Cột 2: Form gửi lời chúc được làm đẹp tinh tế */}
+          {/* Cột 2: Form gửi lời chúc */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="bg-white/5 border border-white/10 p-8 md:p-12 rounded-[32px] backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] relative"
+            className="bg-white/[0.04] border border-white/10 p-8 md:p-12 rounded-[28px] backdrop-blur-xl shadow-[0_30px_60px_-30px_rgba(0,0,0,0.6)]"
           >
             <div className="text-center mb-8">
-              <Heart className="mx-auto text-amber-200 mb-2" size={24} />
-              <h3 className="text-xl font-bold uppercase tracking-widest text-amber-200 font-sans">
+              <Heart className="mx-auto text-amber-200 mb-3" size={26} />
+              <h3 className="text-lg font-bold uppercase tracking-[0.2em] text-amber-200 font-sans">
                 Gửi Lời Chúc Mừng
               </h3>
-              <p className="text-stone-400 text-xs mt-1">
-                Hãy gửi những lời chúc tốt đẹp nhất đến với chúng tôi
+              <p className="text-white/50 text-xs mt-2 font-sans">
+                Hãy gửi những lời chúc tốt đẹp nhất đến với chúng tôi.
               </p>
             </div>
 
-            {/* Cấu hình theme riêng biệt cực sang trọng cho Form gửi lời chúc */}
-            <ConfigProvider
-              theme={{
-                algorithm: theme.darkAlgorithm,
-                token: {
-                  colorPrimary: "#b4975a",
-                  borderRadius: 16,
-                  controlHeight: 50,
-                  colorBgContainer: "rgba(255, 255, 255, 0.03)",
-                  colorBorder: "rgba(255, 255, 255, 0.12)",
-                  colorTextPlaceholder: "rgba(255, 255, 255, 0.3)",
-                },
-                components: {
-                  Input: {
-                    activeBorderColor: "#b4975a",
-                    hoverBorderColor: "#d97706",
-                  },
-                },
-              }}
-            >
+            <ConfigProvider theme={darkFormTheme}>
               <Form
                 form={form}
                 layout="vertical"
                 onFinish={handleSubmit}
                 requiredMark={false}
-                className="space-y-4"
               >
                 <Form.Item
                   name="name"
-                  label={
-                    <span className="text-amber-100 text-xs uppercase tracking-widest font-sans font-bold">
-                      Họ & Tên *
-                    </span>
-                  }
+                  label={fieldLabel("Họ & Tên *")}
                   rules={[
                     { required: true, message: "Vui lòng nhập tên của bạn!" },
                   ]}
                 >
-                  <Input
-                    placeholder="Tên của bạn..."
-                    className="font-sans border-white/10 hover:border-amber-200/50 focus:border-amber-200"
-                  />
+                  <Input placeholder="Tên của bạn..." className="font-sans" />
                 </Form.Item>
 
                 <Form.Item
                   name="wish"
-                  label={
-                    <span className="text-amber-100 text-xs uppercase tracking-widest font-sans font-bold">
-                      Lời Chúc *
-                    </span>
-                  }
-                  rules={[
-                    { required: true, message: "Vui lòng nhập lời chúc!" },
-                  ]}
+                  label={fieldLabel("Lời Chúc *")}
+                  rules={[{ required: true, message: "Vui lòng nhập lời chúc!" }]}
                 >
                   <Input.TextArea
                     rows={4}
                     placeholder="Nhập lời chúc ngọt ngào tại đây..."
-                    className="font-sans border-white/10 hover:border-amber-200/50 focus:border-amber-200 !py-3"
+                    className="font-sans !py-3"
                   />
                 </Form.Item>
 
@@ -244,7 +252,7 @@ const WishesSection = () => {
                     htmlType="submit"
                     loading={submitting}
                     icon={<Send size={16} />}
-                    className="w-full bg-gradient-to-r from-amber-300 via-wedding-gold to-amber-400 text-stone-900 border-none hover:brightness-110 font-bold tracking-widest uppercase h-14 rounded-2xl flex items-center justify-center gap-2 font-sans active:scale-98 transition-all shadow-[0_10px_20px_rgba(180,151,90,0.15)] cursor-pointer"
+                    className={goldButtonClass}
                   >
                     Gửi Lời Chúc
                   </Button>

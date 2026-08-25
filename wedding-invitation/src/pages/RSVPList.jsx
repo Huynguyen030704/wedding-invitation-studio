@@ -1,8 +1,16 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Home, Users, Search, ClipboardList, Heart } from "lucide-react";
-import { Table, Input, Tag } from "antd";
+import {
+  Home,
+  Users,
+  Search,
+  ClipboardList,
+  Heart,
+  MessageSquareHeart,
+  CheckCircle2,
+} from "lucide-react";
+import { Table, Input, Tag, ConfigProvider } from "antd";
 import { supabase } from "../lib/supabaseClient";
 
 const RSVPList = () => {
@@ -74,6 +82,32 @@ const RSVPList = () => {
     if (curr.guest_count === "family") return acc + 4;
     return acc + parseInt(curr.guest_count || 0);
   }, 0);
+
+  // Số lượt xác nhận sẽ tham dự (không tính người chỉ gửi lời chúc)
+  const totalConfirmed = rsvps.filter((r) => r.guest_count !== "0").length;
+  // Số lời chúc đã nhận
+  const totalWishes = rsvps.filter((r) => r.wishes && r.wishes.trim()).length;
+
+  const stats = [
+    {
+      icon: Users,
+      label: "Tổng khách dự tiệc",
+      value: `~${totalGuests}`,
+      accent: "bg-amber-100 text-wedding-gold",
+    },
+    {
+      icon: CheckCircle2,
+      label: "Lượt xác nhận",
+      value: totalConfirmed,
+      accent: "bg-emerald-50 text-emerald-500",
+    },
+    {
+      icon: MessageSquareHeart,
+      label: "Lời chúc",
+      value: totalWishes,
+      accent: "bg-rose-50 text-rose-400",
+    },
+  ];
 
   // Định nghĩa các cột cho Ant Design Table
   const columns = [
@@ -165,34 +199,42 @@ const RSVPList = () => {
     <div className="min-h-screen bg-wedding-cream font-serif p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-          <div>
-            <Link
-              to="/"
-              className="inline-flex items-center gap-2 text-stone-500 hover:text-wedding-gold transition-colors mb-4 text-sm uppercase tracking-widest font-sans font-bold"
-            >
-              <Home size={16} /> Quay Về Thiệp Cưới
-            </Link>
-            <h1 className="text-4xl md:text-5xl font-cursive text-stone-800">
-              Danh Sách Khách Mời
-            </h1>
-          </div>
+        <div className="mb-10">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 text-stone-500 hover:text-wedding-gold transition-colors mb-4 text-xs uppercase tracking-[0.2em] font-sans font-semibold"
+          >
+            <Home size={16} /> Quay về thiệp cưới
+          </Link>
+          <p className="eyebrow mb-2">Bảng điều khiển</p>
+          <h1 className="text-4xl md:text-5xl font-cursive text-wedding-ink">
+            Danh Sách Khách Mời
+          </h1>
+        </div>
 
-          <div className="flex gap-4">
-            <div className="bg-white p-4 rounded-2xl shadow-sm border border-stone-100 flex items-center gap-4">
-              <div className="bg-amber-100 p-3 rounded-xl text-wedding-gold">
-                <Users size={24} />
+        {/* Thẻ thống kê (Bento) */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 mb-8">
+          {stats.map((s) => {
+            const Icon = s.icon;
+            return (
+              <div
+                key={s.label}
+                className="bg-white p-5 rounded-2xl shadow-[0_18px_40px_-30px_rgba(180,151,90,0.6)] border border-stone-100 flex items-center gap-4"
+              >
+                <div className={`p-3 rounded-xl ${s.accent}`}>
+                  <Icon size={24} />
+                </div>
+                <div>
+                  <p className="text-[10px] text-stone-400 uppercase tracking-[0.15em] font-sans font-semibold">
+                    {s.label}
+                  </p>
+                  <p className="text-2xl font-bold text-wedding-ink font-sans tabular-nums">
+                    {s.value}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-[10px] text-stone-400 uppercase tracking-widest font-sans font-bold">
-                  Tổng khách dự tiệc
-                </p>
-                <p className="text-2xl font-bold text-stone-800 font-sans">
-                  ~{totalGuests}
-                </p>
-              </div>
-            </div>
-          </div>
+            );
+          })}
         </div>
 
         {/* Dashboard Table */}
@@ -223,17 +265,36 @@ const RSVPList = () => {
 
           {/* Ant Design Table dành cho Desktop */}
           <div className="hidden md:block">
-            <Table
-              dataSource={filteredRSVPs}
-              columns={columns}
-              rowKey="id"
-              loading={loading}
-              pagination={{
-                pageSize: 10,
-                className: "px-6 font-sans",
+            <ConfigProvider
+              theme={{
+                token: {
+                  colorPrimary: "#b4975a",
+                  borderRadius: 10,
+                  fontFamily:
+                    '"Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif',
+                },
+                components: {
+                  Table: {
+                    headerBg: "#faf7f0",
+                    headerColor: "#6b6257",
+                    rowHoverBg: "#fdfbf7",
+                    borderColor: "#f1ece2",
+                  },
+                },
               }}
-              className="wedding-table"
-            />
+            >
+              <Table
+                dataSource={filteredRSVPs}
+                columns={columns}
+                rowKey="id"
+                loading={loading}
+                pagination={{
+                  pageSize: 10,
+                  className: "px-6 font-sans",
+                }}
+                className="wedding-table"
+              />
+            </ConfigProvider>
           </div>
 
           {/* Thiết kế Cards dành cho Mobile */}

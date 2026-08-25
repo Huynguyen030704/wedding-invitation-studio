@@ -1,21 +1,45 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Send, Volume2, VolumeX, Calendar, MapPin } from "lucide-react";
 import {
-  Form,
-  Input,
-  Select,
-  Button,
-  ConfigProvider,
-  theme,
-  Radio,
-} from "antd";
+  motion,
+  AnimatePresence,
+  useScroll,
+  useTransform,
+  useReducedMotion,
+} from "framer-motion";
+import {
+  Heart,
+  Send,
+  Volume2,
+  VolumeX,
+  Calendar,
+  CalendarPlus,
+  MapPin,
+  ChevronDown,
+} from "lucide-react";
+import { Form, Input, Select, Button, ConfigProvider, Radio } from "antd";
 import confetti from "canvas-confetti";
 import Swal from "sweetalert2";
 import { supabase } from "../lib/supabaseClient";
+import { darkFormTheme, goldButtonClass } from "../lib/formTheme";
+import { downloadICS } from "../lib/calendar";
 import FloatingPetals from "../components/FloatingPetals";
 import WeddingGallery from "../components/WeddingGallery";
 import WishesSection from "../components/WishesSection";
+import GiftSection from "../components/GiftSection";
+import ScrollProgress from "../components/ScrollProgress";
+import GoldenDust from "../components/GoldenDust";
+import { Monogram } from "../components/Monogram";
+import { CornerFlourish } from "../components/Flourish";
+import {
+  SectionHeading,
+  OrnamentalDivider,
+  RevealWords,
+} from "../components/Ornaments";
+
+const pad2 = (n) => String(n).padStart(2, "0");
+
+// Bảng màu confetti hợp tông vàng/hồng sang trọng (thay confetti cầu vồng)
+const CONFETTI_COLORS = ["#b4975a", "#e7d6b4", "#c9ad78", "#c98a86", "#e3c4bd", "#ffffff"];
 
 const Invitation = ({ type = "bride" }) => {
   const [timeLeft, setTimeLeft] = useState({
@@ -31,6 +55,11 @@ const Invitation = ({ type = "bride" }) => {
   const [audio] = useState(
     new Audio(`${import.meta.env.BASE_URL}music/beautiful-in-white.mp3`),
   );
+
+  // Parallax nhẹ cho ảnh hero khi cuộn (tự tắt nếu người dùng chọn giảm chuyển động)
+  const prefersReduced = useReducedMotion();
+  const { scrollY } = useScroll();
+  const heroImgY = useTransform(scrollY, [0, 600], [0, prefersReduced ? 0 : 60]);
 
   const isName = { trai: "Huy", gai: "Trinh" };
   const isFullName = { trai: "Nhựt Huy", gai: "Mai Trinh" };
@@ -114,7 +143,12 @@ const Invitation = ({ type = "bride" }) => {
 
       if (error) throw error;
 
-      confetti({ particleCount: 150, spread: 80, origin: { y: 0.7 } });
+      confetti({
+        particleCount: 150,
+        spread: 80,
+        origin: { y: 0.7 },
+        colors: CONFETTI_COLORS,
+      });
 
       Swal.fire({
         title: "Xác nhận thành công!",
@@ -142,83 +176,124 @@ const Invitation = ({ type = "bride" }) => {
 
   const handleOpenInvitation = () => {
     setIsOpen(true);
-    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: CONFETTI_COLORS,
+    });
     audio
       .play()
       .then(() => setIsPlaying(true))
       .catch(() => {});
   };
 
+  const handleAddToCalendar = () => {
+    downloadICS({
+      title: `${config.ceremonyName} · Huy & Trinh`,
+      start: config.targetDate,
+      address: `${config.locationName}, ${config.locationAddress}`,
+      description: `${config.locationCalendar} ${config.locationCalendarLunar}`,
+    });
+  };
+
+  const fieldLabel = (text) => (
+    <span className="font-sans text-[11px] uppercase tracking-[0.2em] font-semibold text-wedding-champagne">
+      {text}
+    </span>
+  );
+
   return (
     <div className="bg-wedding-cream min-h-screen font-serif overflow-x-hidden relative">
+      {isOpen && <ScrollProgress />}
       {/* HIỆU ỨNG MỞ THIỆP (OVERLAY) */}
       <AnimatePresence>
         {!isOpen && (
-          <div className="fixed inset-0 z-10000 flex overflow-hidden">
-            {/* Cánh cửa bên trái */}
+          <div className="fixed inset-0 z-[10000] overflow-hidden">
+            {/* Lớp ảnh nền LIỀN MẠCH — không bao giờ bị tách/cắt */}
+            <div className="absolute inset-0 z-0">
+              <img
+                src={`${import.meta.env.BASE_URL}images/133A1281.JPG`}
+                className="w-full h-full object-cover object-center"
+                alt=""
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-black/55" />
+            </div>
+
+            {/* Hai "rèm" mờ phủ lên ảnh, trượt sang 2 bên khi mở thiệp.
+                Ảnh dưới liền mạch nên khi mở chỉ sáng dần từ giữa ra,
+                không cắt vào mặt cô dâu/chú rể. */}
             <motion.div
               initial={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ duration: 1.2, ease: "easeInOut" }}
-              className="relative w-1/2 h-full bg-stone-900 border-r border-amber-200/30 flex items-center justify-end"
-            >
-              <div className="absolute inset-0 opacity-20">
-                <img
-                  src={`${import.meta.env.BASE_URL}images/133A1217.JPG`}
-                  className="w-full h-full object-cover"
-                  alt=""
-                />
-              </div>
-            </motion.div>
-
-            {/* Cánh cửa bên phải */}
+              className="absolute inset-y-0 left-0 w-1/2 z-10 bg-black/45 backdrop-blur-[2px]"
+            />
             <motion.div
               initial={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ duration: 1.2, ease: "easeInOut" }}
-              className="relative w-1/2 h-full bg-stone-900 border-l border-amber-200/30 flex items-center justify-start"
-            >
-              <div className="absolute inset-0 opacity-20">
-                <img
-                  src={`${import.meta.env.BASE_URL}images/133A1331.JPG`}
-                  className="w-full h-full object-cover"
-                  alt=""
-                />
-              </div>
-            </motion.div>
+              className="absolute inset-y-0 right-0 w-1/2 z-10 bg-black/45 backdrop-blur-[2px]"
+            />
 
             {/* Content ở giữa */}
             <motion.div
-              exit={{ opacity: 0, scale: 0.8 }}
+              exit={{ opacity: 0, scale: 0.85 }}
               transition={{ duration: 0.5 }}
-              className="absolute inset-0 z-10 flex items-center justify-center"
+              className="absolute inset-0 z-20 flex items-center justify-center px-6"
             >
-              <div className="text-center bg-white/10 backdrop-blur-md px-8 py-10 md:p-12 mx-6 rounded-[2.5rem] md:rounded-[3rem] border border-white/20 shadow-2xl">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.92, filter: "blur(8px)" }}
+                animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                transition={{ duration: 0.9, ease: "easeOut" }}
+                className="relative text-center bg-white/[0.07] backdrop-blur-md px-10 py-12 md:px-16 md:py-14 rounded-[2.5rem] border border-white/15 shadow-2xl"
+              >
+                {/* Khung góc trang trí */}
+                <span className="pointer-events-none absolute left-5 top-5 h-8 w-8 border-l border-t border-amber-200/40" />
+                <span className="pointer-events-none absolute right-5 top-5 h-8 w-8 border-r border-t border-amber-200/40" />
+                <span className="pointer-events-none absolute left-5 bottom-5 h-8 w-8 border-l border-b border-amber-200/40" />
+                <span className="pointer-events-none absolute right-5 bottom-5 h-8 w-8 border-r border-b border-amber-200/40" />
+
+                <p className="eyebrow !text-wedding-champagne mb-5">
+                  Thân mời bạn đến
+                </p>
                 <motion.div
-                  animate={{ scale: [1.5, 1.1, 1.5] }}
+                  animate={{ scale: [1, 1.12, 1] }}
                   transition={{ repeat: Infinity, duration: 2 }}
                 >
                   <Heart
-                    className="mx-auto text-rose-500 mb-4"
+                    className="mx-auto text-wedding-rose mb-4"
                     fill="currentColor"
-                    size={44}
+                    size={38}
                   />
                 </motion.div>
-                <h2 className="font-cursive text-4xl md:text-5xl text-amber-200 mb-4">
-                  {isName.trai} & {isName.gai}
+                <h2 className="font-cursive mb-2 flex flex-col items-center leading-[0.95]">
+                  <span className="text-5xl md:text-6xl text-gilded">
+                    {isName.trai}
+                  </span>
+                  <span className="text-wedding-gold text-3xl md:text-4xl my-1">
+                    &
+                  </span>
+                  <span className="text-5xl md:text-6xl text-gilded">
+                    {isName.gai}
+                  </span>
                 </h2>
+                <p className="font-serif italic text-white/60 mb-8">
+                  {config.ceremonyName} · {config.bannerDate}
+                </p>
                 <motion.div
-                  animate={{ scale: [1, 1.1, 1] }}
+                  animate={{ scale: [1, 1.04, 1] }}
                   transition={{ repeat: Infinity, duration: 2 }}
                 >
                   <button
                     onClick={handleOpenInvitation}
-                    className="bg-white text-stone-900 px-8 md:px-10 py-4 rounded-full font-sans tracking-[0.2em] text-xs hover:bg-amber-100 transition-all shadow-xl font-bold cursor-pointer"
+                    className="btn-shimmer group inline-flex items-center gap-2 bg-white text-stone-900 px-9 md:px-11 py-4 rounded-full font-sans tracking-[0.2em] text-xs font-bold uppercase hover:bg-amber-50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-200 transition-all shadow-xl cursor-pointer"
                   >
-                    CHẠM ĐỂ MỞ THIỆP
+                    <Heart size={14} className="text-wedding-rose fill-current" />
+                    Chạm để mở thiệp
                   </button>
                 </motion.div>
-              </div>
+              </motion.div>
             </motion.div>
           </div>
         )}
@@ -227,34 +302,58 @@ const Invitation = ({ type = "bride" }) => {
       <div className={`${!isOpen ? "h-screen overflow-hidden" : ""}`}>
         <FloatingPetals />
 
+        {/* ===== HERO ===== */}
         <section className="relative h-dvh flex items-center justify-center overflow-hidden">
-          <div className="absolute inset-0 z-0">
+          <motion.div
+            style={{ y: heroImgY }}
+            className="absolute -top-[8%] inset-x-0 h-[116%] z-0 will-change-transform"
+          >
             <img
               src={`${import.meta.env.BASE_URL}images/133A1281.JPG`}
               className="w-full h-full object-cover object-center animate-slow-zoom"
-              alt="Hero"
+              alt="Ảnh cưới Huy và Trinh"
             />
-            <div className="absolute inset-0 bg-black/45" />
-          </div>
+          </motion.div>
+          {/* Lớp phủ chuyển sắc tinh tế thay cho nền đen phẳng */}
+          <div className="absolute inset-0 z-0 bg-gradient-to-b from-black/55 via-black/25 to-black/60" />
+          {/* Vignette điện ảnh */}
+          <div className="absolute inset-0 z-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_52%,rgba(0,0,0,0.45)_100%)]" />
+          {/* Bụi vàng lấp lánh */}
+          <GoldenDust count={18} />
 
           <div className="relative z-10 text-center text-white px-6">
             <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="uppercase text-[10px] md:text-sm tracking-[0.3em] mb-4 font-sans font-bold text-amber-200"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="eyebrow !text-wedding-champagne mb-5"
             >
               {config.ceremonyName}
             </motion.p>
-            <motion.h1
-              initial={{ y: 30, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              className="text-5xl md:text-9xl font-cursive text-amber-100 mb-6 leading-tight"
+            <h1 className="text-6xl md:text-9xl font-cursive mb-6 leading-[1.05] drop-shadow-[0_2px_20px_rgba(0,0,0,0.55)]">
+              <RevealWords
+                text={`${isName.trai} & ${isName.gai}`}
+                wordClassName="text-gilded"
+                stagger={0.16}
+              />
+            </h1>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="inline-flex items-center gap-4 border-y border-white/30 py-3 px-6"
             >
-              {isName.trai} & {isName.gai}
-            </motion.h1>
-            <div className="text-lg md:text-2xl font-light italic border-y border-white/30 py-3 inline-block px-6 font-sans">
-              {config.bannerDate}
-            </div>
+              <span className="h-px w-6 bg-amber-200/60" />
+              <span className="text-lg md:text-2xl font-serif italic tracking-wide">
+                {config.bannerDate}
+              </span>
+              <span className="h-px w-6 bg-amber-200/60" />
+            </motion.div>
+          </div>
+
+          {/* Gợi ý cuộn xuống */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 text-white/70 animate-scroll-hint">
+            <ChevronDown size={26} />
           </div>
 
           {isOpen && (
@@ -262,7 +361,8 @@ const Invitation = ({ type = "bride" }) => {
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               onClick={toggleMusic}
-              className="fixed bottom-6 right-6 z-50 bg-white/80 backdrop-blur-md p-4 rounded-full shadow-2xl border border-amber-200 text-wedding-gold hover:bg-white transition-all group cursor-pointer"
+              aria-label={isPlaying ? "Tắt nhạc nền" : "Bật nhạc nền"}
+              className="fixed bottom-6 right-6 z-50 bg-white/85 backdrop-blur-md p-4 rounded-full shadow-2xl border border-amber-200 text-wedding-gold hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wedding-gold transition-all cursor-pointer"
             >
               {isPlaying ? (
                 <div className="relative">
@@ -279,246 +379,209 @@ const Invitation = ({ type = "bride" }) => {
           )}
         </section>
 
-        {/* Bộ đếm ngược thời gian */}
-        <section className="py-10 bg-white shadow-sm relative z-20">
-          <div className="max-w-xl mx-auto grid grid-cols-4 gap-2 px-4">
-            {[
-              { label: "Ngày", value: timeLeft.days },
-              { label: "Giờ", value: timeLeft.hours },
-              { label: "Phút", value: timeLeft.mins },
-              { label: "Giây", value: timeLeft.secs },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="text-center border-r last:border-0 border-stone-100"
-              >
-                <div className="text-2xl md:text-5xl font-bold text-wedding-gold font-sans">
-                  {item.value}
-                </div>
-                <div className="text-[9px] md:text-xs uppercase tracking-widest text-stone-400 font-sans">
-                  {item.label}
-                </div>
-              </div>
-            ))}
+        {/* ===== ĐẾM NGƯỢC ===== */}
+        <section className="py-12 md:py-16 bg-white relative z-20 border-b border-stone-100">
+          <div className="max-w-3xl mx-auto px-4">
+            <p className="eyebrow text-center mb-8">Đếm ngược đến ngày trọng đại</p>
+            <motion.div
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true }}
+              transition={{ staggerChildren: 0.12 }}
+              className="grid grid-cols-4 gap-3 md:gap-5"
+            >
+              {[
+                { label: "Ngày", value: timeLeft.days },
+                { label: "Giờ", value: timeLeft.hours },
+                { label: "Phút", value: timeLeft.mins },
+                { label: "Giây", value: timeLeft.secs },
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  variants={{
+                    hidden: { opacity: 0, y: 20 },
+                    show: { opacity: 1, y: 0 },
+                  }}
+                  transition={{ type: "spring", stiffness: 200, damping: 18 }}
+                  className="hover-lift rounded-2xl border border-amber-100 bg-wedding-cream/60 py-4 md:py-6 text-center shadow-[0_10px_30px_-20px_rgba(180,151,90,0.6)]"
+                >
+                  <div className="text-3xl md:text-5xl font-bold text-wedding-gold font-sans tabular-nums leading-none">
+                    {pad2(item.value)}
+                  </div>
+                  <div className="mt-2 text-[9px] md:text-xs uppercase tracking-[0.2em] text-stone-400 font-sans font-semibold">
+                    {item.label}
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
           </div>
         </section>
 
-        {/* Thông tin Địa điểm & Thời gian làm lễ của từng bên */}
-        <section className="py-16 md:py-24 px-4 max-w-4xl mx-auto">
+        {/* ===== TRÂN TRỌNG KÍNH MỜI + ĐỊA ĐIỂM ===== */}
+        <section className="py-20 md:py-28 px-4 max-w-4xl mx-auto">
           <motion.div
             whileInView={{ opacity: 1, y: 0 }}
-            initial={{ opacity: 0, y: 50 }}
-            viewport={{ once: true }}
-            className="card-border text-center rounded-3xl"
+            initial={{ opacity: 0, y: 40 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6 }}
+            className="card-border rounded-[2rem] text-center overflow-hidden"
           >
-            <Heart
-              className="mx-auto text-rose-500 mb-6"
-              fill="currentColor"
-              size={28}
+            {/* Hoa văn góc */}
+            <CornerFlourish className="absolute left-3 top-3 text-wedding-gold/70" />
+            <CornerFlourish className="absolute right-3 bottom-3 rotate-180 text-wedding-gold/70" />
+
+            <SectionHeading
+              eyebrow="Trân trọng kính mời"
+              title="Đến chung vui cùng chúng tôi"
+              description="Sự hiện diện của Quý vị là niềm vinh dự và hạnh phúc lớn cho gia đình chúng tôi."
+              variant="serif"
             />
-            <h2 className="text-3xl md:text-4xl text-stone-700 mb-2 uppercase tracking-widest font-sans font-bold">
-              Trân Trọng Kính Mời
-            </h2>
-            <p className="text-base md:text-lg leading-relaxed text-stone-500 italic mb-8">
-              Sự hiện diện của Quý vị là niềm vinh dự và hạnh phúc lớn cho gia
-              đình chúng tôi
-            </p>
 
-            {/* Hiển thị thông tin địa điểm và lịch chi tiết của bên tương ứng */}
-            <div className="bg-white/40 p-6 md:p-12 rounded-2xl border border-amber-100 space-y-6 text-center">
-              <Calendar className="mx-auto text-wedding-gold" size={32} />
-              <p className="font-bold text-base tracking-widest text-stone-700 font-sans">
-                THỜI GIAN LÀM LỄ
-              </p>
-              <p className="text-xl md:text-2xl text-stone-800 font-bold leading-snug">
-                {config.locationCalendar.split(" - ").map((part, i) => (
-                  <span key={i} className="block">
-                    {part}
-                  </span>
-                ))}
-              </p>
-              <p className="text-sm text-stone-500 font-sans italic">
-                {config.locationCalendarLunar}
-              </p>
-
-              <div className="pt-6 border-t border-stone-100 space-y-2">
-                <MapPin className="mx-auto text-rose-500 mb-2" size={32} />
-                <p className="font-bold text-base tracking-widest text-stone-700 font-sans">
-                  ĐỊA ĐIỂM TỔ CHỨC
+            <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 text-left">
+              {/* Thời gian */}
+              <div className="hover-lift rounded-2xl border border-amber-100 bg-white/70 p-6 md:p-8 text-center">
+                <Calendar className="mx-auto text-wedding-gold mb-4" size={30} />
+                <p className="eyebrow mb-3">Thời gian làm lễ</p>
+                <p className="text-xl md:text-2xl text-wedding-ink font-serif font-semibold leading-snug">
+                  {config.locationCalendar.split(" - ").map((part, i) => (
+                    <span key={i} className="block">
+                      {part}
+                    </span>
+                  ))}
                 </p>
-                <p className="text-xl text-stone-800 font-bold">
+                <p className="mt-2 text-sm text-stone-500 font-sans italic">
+                  {config.locationCalendarLunar}
+                </p>
+              </div>
+
+              {/* Địa điểm */}
+              <div className="hover-lift rounded-2xl border border-amber-100 bg-white/70 p-6 md:p-8 text-center">
+                <MapPin className="mx-auto text-wedding-rose mb-4" size={30} />
+                <p className="eyebrow mb-3">Địa điểm tổ chức</p>
+                <p className="text-xl md:text-2xl text-wedding-ink font-serif font-semibold">
                   {config.locationName}
                 </p>
-                <p className="text-sm text-stone-500 font-sans mt-1 max-w-md mx-auto leading-relaxed">
+                <p className="mt-2 text-sm text-stone-500 font-sans max-w-xs mx-auto leading-relaxed">
                   {config.locationAddress}
                 </p>
               </div>
             </div>
+
+            {/* Lưu sự kiện vào lịch */}
+            <div className="mt-8">
+              <button
+                onClick={handleAddToCalendar}
+                className="btn-shimmer inline-flex items-center gap-2 rounded-full border border-wedding-gold/40 bg-wedding-gold/10 text-wedding-gold px-7 py-3 font-sans text-sm font-semibold tracking-wide hover:bg-wedding-gold hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wedding-gold transition-all active:scale-95 cursor-pointer"
+              >
+                <CalendarPlus size={18} />
+                Lưu vào lịch
+              </button>
+            </div>
           </motion.div>
         </section>
 
-        {/* Thông tin đại diện hai bên */}
-        <section className="bg-stone-50 py-16 px-4 md:py-24">
+        {/* ===== ĐẠI DIỆN HAI BÊN ===== */}
+        <section className="bg-wedding-ivory py-20 md:py-28 px-4">
           <div className="max-w-5xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20">
-              <motion.div
-                initial={{ opacity: 0, x: -50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                className="text-center space-y-4"
-              >
-                <h3 className="text-xl md:text-2xl font-sans text-stone-700 uppercase tracking-widest border-b border-amber-200 pb-4 inline-block font-bold">
-                  Đại Diện Nhà Trai
-                </h3>
-                <div className="pt-4 space-y-2 font-serif">
-                  <p className="text-lg font-bold text-stone-800">
-                    Ông: NGUYỄN THANH PHONG
-                  </p>
-                  <p className="text-lg font-bold text-stone-800">
-                    Bà: TRƯƠNG THỊ NGỌC PHƯƠNG
-                  </p>
-                  <p className="text-stone-500 italic text-sm">
-                    (Thân phụ & Thân mẫu)
-                  </p>
-                </div>
-                <div className="pt-6">
-                  <p className="font-cursive text-4xl text-wedding-gold">
-                    Chú rể: {isFullName.trai}
-                  </p>
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, x: 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                className="text-center space-y-4"
-              >
-                <h3 className="text-xl md:text-2xl font-sans text-stone-700 uppercase tracking-widest border-b border-amber-200 pb-4 inline-block font-bold">
-                  Đại Diện Nhà Gái
-                </h3>
-                <div className="pt-4 space-y-2 font-serif">
-                  <p className="text-lg font-bold text-stone-800">
-                    Ông: PHẠM VĂN TIẾN
-                  </p>
-                  <p className="text-lg font-bold text-stone-800">
-                    Bà: ĐỖ THỊ TUYẾT MAI
-                  </p>
-                  <p className="text-stone-500 italic text-sm">
-                    (Thân phụ & Thân mẫu)
-                  </p>
-                </div>
-                <div className="pt-6">
-                  <p className="font-cursive text-4xl text-wedding-gold">
-                    Cô dâu: {isFullName.gai}
-                  </p>
-                </div>
-              </motion.div>
+            <SectionHeading
+              eyebrow="Gia đình hai bên"
+              title="Song hỷ"
+              className="mb-14"
+            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
+              {[
+                {
+                  side: "Nhà Trai",
+                  father: "NGUYỄN THANH PHONG",
+                  mother: "TRƯƠNG THỊ NGỌC PHƯƠNG",
+                  role: "Chú rể",
+                  name: isFullName.trai,
+                  x: -50,
+                },
+                {
+                  side: "Nhà Gái",
+                  father: "PHẠM VĂN TIẾN",
+                  mother: "ĐỖ THỊ TUYẾT MAI",
+                  role: "Cô dâu",
+                  name: isFullName.gai,
+                  x: 50,
+                },
+              ].map((f) => (
+                <motion.div
+                  key={f.side}
+                  initial={{ opacity: 0, x: f.x }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6 }}
+                  className="hover-lift text-center rounded-3xl border border-amber-100 bg-white/70 px-6 py-10 md:px-10 shadow-[0_20px_60px_-40px_rgba(180,151,90,0.5)]"
+                >
+                  <h3 className="eyebrow !text-sm border-b border-amber-200/70 pb-4 inline-block">
+                    Đại diện {f.side}
+                  </h3>
+                  <div className="pt-6 space-y-1.5">
+                    <p className="text-lg font-serif font-semibold text-wedding-ink">
+                      Ông: {f.father}
+                    </p>
+                    <p className="text-lg font-serif font-semibold text-wedding-ink">
+                      Bà: {f.mother}
+                    </p>
+                    <p className="text-stone-500 italic text-sm font-sans">
+                      (Thân phụ &amp; Thân mẫu)
+                    </p>
+                  </div>
+                  <div className="pt-7">
+                    <p className="eyebrow mb-1">{f.role}</p>
+                    <p className="font-cursive text-4xl md:text-5xl text-wedding-gold">
+                      {f.name}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
             </div>
 
-            <div className="flex justify-center mt-12">
-              <div className="h-px bg-amber-200 w-full max-w-[200px] self-center"></div>
-              <Heart
-                className="mx-4 text-rose-300 animate-pulse"
-                fill="currentColor"
-                size={20}
-              />
-              <div className="h-px bg-amber-200 w-full max-w-[200px] self-center"></div>
-            </div>
+            <OrnamentalDivider className="mt-14" />
           </div>
         </section>
 
-        {/* Thư viện ảnh cưới (WeddingGallery Component) */}
+        {/* ===== ALBUM ẢNH CƯỚI ===== */}
         <WeddingGallery />
 
-        {/* Form Xác nhận tham dự (RSVP Form được làm đẹp tinh tế và sang trọng) */}
-        <section className="py-24 bg-stone-900 text-white relative overflow-hidden">
-          <div className="absolute inset-0 opacity-10 pointer-events-none">
-            <img
-              src="https://png.pngtree.com/thumb_back/fh260/background/20240929/pngtree-pink-roses-and-purple-flowers-on-a-beige-background-floral-for-image_16278432.jpg"
-              className="w-full h-full object-cover"
-              alt=""
-            />
+        {/* ===== XÁC NHẬN THAM DỰ (RSVP) ===== */}
+        <section className="py-20 md:py-28 bg-wedding-charcoal text-white relative overflow-hidden">
+          {/* Nền gradient + đốm sáng tự dựng (thay ảnh hotlink bên ngoài) */}
+          <div className="pointer-events-none absolute inset-0">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(180,151,90,0.18),transparent_45%),radial-gradient(circle_at_80%_80%,rgba(201,138,134,0.16),transparent_45%)]" />
           </div>
+          <GoldenDust count={14} />
           <div className="max-w-2xl mx-auto px-4 relative z-10">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl md:text-5xl font-cursive text-amber-200 mb-4">
-                Xác Nhận Tham Dự
-              </h2>
-              <p className="text-stone-400 tracking-widest uppercase text-xs font-sans">
-                Sự phản hồi sớm từ Quý khách sẽ giúp chúng tôi đón tiếp chu đáo
-                nhất
-              </p>
-            </div>
+            <SectionHeading
+              eyebrow="Phúc đáp"
+              title="Xác Nhận Tham Dự"
+              description="Sự phản hồi sớm từ Quý khách sẽ giúp chúng tôi đón tiếp chu đáo nhất."
+              tone="light"
+              className="mb-12"
+            />
 
-            {/* Sử dụng ConfigProvider để tùy chỉnh giao diện Form Ant Design cực đẹp và sang trọng */}
-            <div className="bg-white/5 p-8 md:p-12 rounded-[32px] border border-white/10 backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.3)]">
-              <ConfigProvider
-                theme={{
-                  algorithm: theme.darkAlgorithm,
-                  token: {
-                    colorPrimary: "#b4975a", // màu vàng gold làm chủ đạo
-                    borderRadius: 16, // Bo góc mềm mại hơn
-                    controlHeight: 50, // Nâng độ cao input cho dễ thao tác, thanh thoát hơn
-                    colorBgContainer: "rgba(255, 255, 255, 0.03)", // Nền input trong suốt tối giản
-                    colorBorder: "rgba(255, 255, 255, 0.12)", // Viền mỏng mờ
-                    colorTextPlaceholder: "rgba(255, 255, 255, 0.3)",
-                    colorBgElevated: "#1c1917", // Nền dropdown menu cùng tông màu tối
-                  },
-                  components: {
-                    Form: {
-                      itemMarginBottom: 28, // Tăng khoảng cách margin-bottom giữa các trường
-                      verticalLabelPadding: "0 0 10px 0", // Tăng khoảng cách từ nhãn đến ô nhập liệu
-                    },
-                    Input: {
-                      activeBorderColor: "#b4975a",
-                      hoverBorderColor: "#d97706",
-                    },
-                    Select: {
-                      optionSelectedBg: "rgba(180, 151, 90, 0.2)",
-                      activeBorderColor: "#b4975a",
-                      hoverBorderColor: "#d97706",
-                    },
-                    Radio: {
-                      buttonBg: "rgba(255, 255, 255, 0.02)",
-                      buttonCheckedBg: "#b4975a",
-                      buttonSolidCheckedBg: "#b4975a",
-                      colorPrimary: "#b4975a",
-                      colorText: "#d6d3d1",
-                    },
-                  },
-                }}
-              >
+            <div className="bg-white/[0.04] p-7 md:p-12 rounded-[28px] border border-white/10 backdrop-blur-xl shadow-[0_30px_60px_-30px_rgba(0,0,0,0.6)]">
+              <ConfigProvider theme={darkFormTheme}>
                 <Form
                   layout="vertical"
                   onFinish={handleRSVP}
                   requiredMark={false}
-                  className="space-y-4"
                 >
                   <Form.Item
                     name="fullName"
-                    label={
-                      <span className="text-amber-100 text-xs uppercase tracking-widest font-sans font-bold">
-                        Họ & Tên *
-                      </span>
-                    }
+                    label={fieldLabel("Họ & Tên *")}
                     rules={[
                       { required: true, message: "Vui lòng nhập tên của bạn!" },
                     ]}
                   >
-                    <Input
-                      placeholder="Nhập tên của bạn..."
-                      className="font-sans border-white/10 hover:border-amber-200/50 focus:border-amber-200"
-                    />
+                    <Input placeholder="Nhập tên của bạn..." className="font-sans" />
                   </Form.Item>
 
                   <Form.Item
                     name="attendance"
-                    label={
-                      <span className="text-amber-100 text-xs uppercase tracking-widest font-sans font-bold">
-                        Bạn sẽ tham dự chứ? *
-                      </span>
-                    }
+                    label={fieldLabel("Bạn sẽ tham dự chứ? *")}
                     initialValue="yes"
                   >
                     <Radio.Group
@@ -564,44 +627,34 @@ const Invitation = ({ type = "bride" }) => {
                         transition={{ duration: 0.3 }}
                         className="overflow-hidden"
                       >
-                        <div className="grid grid-cols-1 md:grid-cols-1 gap-6 pb-2">
-                          <Form.Item
-                            name="guestCount"
-                            label={
-                              <span className="text-amber-100 text-xs uppercase tracking-widest font-sans font-bold">
-                                Số lượng khách *
-                              </span>
-                            }
-                            initialValue="1"
-                            rules={[{ required: true }]}
-                          >
-                            <Select
-                              className="font-sans border-white/10 hover:border-amber-200/50"
-                              options={[
-                                { value: "1", label: "1 người" },
-                                { value: "2", label: "2 người" },
-                                { value: "3", label: "3 người" },
-                                { value: "family", label: "Cả gia đình" },
-                              ]}
-                            />
-                          </Form.Item>
-                        </div>
+                        <Form.Item
+                          name="guestCount"
+                          label={fieldLabel("Số lượng khách *")}
+                          initialValue="1"
+                          rules={[{ required: true }]}
+                        >
+                          <Select
+                            className="font-sans"
+                            options={[
+                              { value: "1", label: "1 người" },
+                              { value: "2", label: "2 người" },
+                              { value: "3", label: "3 người" },
+                              { value: "family", label: "Cả gia đình" },
+                            ]}
+                          />
+                        </Form.Item>
                       </motion.div>
                     )}
                   </AnimatePresence>
 
                   <Form.Item
                     name="wishes"
-                    label={
-                      <span className="text-amber-100 text-xs uppercase tracking-widest font-sans font-bold">
-                        Lời chúc gửi đến cặp đôi
-                      </span>
-                    }
+                    label={fieldLabel("Lời chúc gửi đến cặp đôi")}
                   >
                     <Input.TextArea
                       rows={4}
                       placeholder="Gửi lời chúc mừng đến cô dâu chú rể..."
-                      className="font-sans border-white/10 hover:border-amber-200/50 focus:border-amber-200 !py-3"
+                      className="font-sans !py-3"
                     />
                   </Form.Item>
 
@@ -611,7 +664,7 @@ const Invitation = ({ type = "bride" }) => {
                       htmlType="submit"
                       loading={isSubmitting}
                       icon={<Send size={18} />}
-                      className="w-full bg-gradient-to-r from-amber-300 via-wedding-gold to-amber-400 text-stone-900 border-none hover:brightness-110 font-bold tracking-widest uppercase h-14 rounded-2xl flex items-center justify-center gap-2 font-sans active:scale-98 transition-all shadow-[0_10px_20px_rgba(180,151,90,0.15)] cursor-pointer"
+                      className={goldButtonClass}
                     >
                       {isSubmitting ? "Đang gửi..." : "Gửi Xác Nhận"}
                     </Button>
@@ -622,32 +675,32 @@ const Invitation = ({ type = "bride" }) => {
           </div>
         </section>
 
-        {/* Hộp Thư Lời Chúc (WishesSection Component) */}
+        {/* ===== HỘP THƯ LỜI CHÚC ===== */}
         <WishesSection />
 
-        {/* Bản đồ chỉ đường phù hợp cho từng nhà */}
-        <section className="py-20 px-4 md:py-24 bg-white">
-          <div className="max-w-4xl mx-auto space-y-8 text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <h3 className="text-2xl md:text-3xl uppercase tracking-[0.2em] text-stone-700 mb-2 font-sans font-bold">
-                Đường Đến Lễ Cưới
-              </h3>
-              <p className="text-stone-500 italic mb-8">
-                Rất hân hạnh được đón tiếp Quý khách tại {config.locationName}
-              </p>
-            </motion.div>
+        {/* ===== HỘP MỪNG CƯỚI ===== */}
+        {/* TẠM ẨN: chờ số tài khoản thật. Điền STK trong GiftSection.jsx rồi bỏ comment dòng dưới. */}
+        {/* <GiftSection /> */}
+
+        {/* ===== BẢN ĐỒ CHỈ ĐƯỜNG ===== */}
+        <section className="py-20 md:py-28 px-4 bg-white">
+          <div className="max-w-4xl mx-auto space-y-10 text-center">
+            <SectionHeading
+              eyebrow="Chỉ đường"
+              title="Đường Đến Lễ Cưới"
+              description={`Rất hân hạnh được đón tiếp Quý khách tại ${config.locationName}.`}
+              variant="serif"
+            />
 
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.96 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              className="relative w-full aspect-video md:aspect-21/9 rounded-2xl overflow-hidden shadow-2xl border-4 border-white"
+              transition={{ duration: 0.6 }}
+              className="relative w-full aspect-video md:aspect-21/9 rounded-2xl overflow-hidden shadow-2xl border-4 border-white ring-1 ring-amber-100"
             >
               <iframe
+                title="Bản đồ đến địa điểm tổ chức"
                 src={config.mapEmbedUrl}
                 className="absolute inset-0 w-full h-full border-0"
                 allowFullScreen=""
@@ -656,77 +709,68 @@ const Invitation = ({ type = "bride" }) => {
               ></iframe>
             </motion.div>
 
-            <div className="pt-6">
+            <div>
               <a
                 href={config.mapDirectionUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-stone-900 text-white px-8 py-4 rounded-full font-sans tracking-widest text-sm hover:bg-stone-800 transition-all shadow-lg active:scale-95 font-bold"
+                className="btn-shimmer inline-flex items-center gap-2 bg-wedding-charcoal text-white px-8 py-4 rounded-full font-sans tracking-widest text-sm hover:bg-stone-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wedding-gold transition-all shadow-lg active:scale-95 font-bold"
               >
-                <MapPin size={18} className="text-rose-400" />
+                <MapPin size={18} className="text-wedding-rose" />
                 CHỈ ĐƯỜNG TRÊN GOOGLE MAPS
               </a>
             </div>
           </div>
         </section>
 
-        {/* Lời cảm ơn & Footer */}
-        <section className="relative py-24 px-6 text-center bg-white overflow-hidden border-t border-stone-50">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 opacity-5 pointer-events-none">
-            <Heart size={300} className="text-stone-300" />
+        {/* ===== LỜI CẢM ƠN & FOOTER ===== */}
+        <section className="relative py-20 md:py-28 px-6 text-center bg-wedding-ivory overflow-hidden border-t border-amber-100/60">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 opacity-[0.04] pointer-events-none">
+            <Heart size={300} className="text-wedding-gold" />
           </div>
 
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
+            transition={{ duration: 0.9 }}
             viewport={{ once: true }}
-            className="relative z-10 max-w-2xl mx-auto space-y-8"
+            className="relative z-10 max-w-2xl mx-auto"
           >
-            <div className="flex justify-center items-center gap-4 mb-4">
-              <div className="h-px w-12 bg-amber-200"></div>
-              <Heart
-                className="text-rose-400 fill-rose-400 animate-pulse"
-                size={24}
-              />
-              <div className="h-px w-12 bg-amber-200"></div>
-            </div>
-
-            <h2 className="text-4xl md:text-5xl font-cursive text-wedding-gold">
-              Lời Cảm Ơn
+            <OrnamentalDivider className="mb-8" />
+            <p className="eyebrow mb-4">Lời cảm ơn</p>
+            <h2 className="text-4xl md:text-6xl font-cursive text-gilded mb-8">
+              Thank You
             </h2>
 
-            <div className="space-y-6">
-              <p className="text-lg md:text-xl text-stone-600 leading-relaxed italic font-serif">
-                "Sự hiện diện và những lời chúc tốt đẹp của Quý vị <br />
-                là món quà ý nghĩa nhất dành cho chúng tôi trong ngày trọng đại
-                này."
-              </p>
-
-              <p className="text-stone-500 font-serif tracking-[0.2em] uppercase text-sm">
-                Trân trọng cảm ơn và rất hân hạnh được đón tiếp!
-              </p>
-            </div>
+            <p className="text-lg md:text-xl text-stone-600 leading-relaxed italic font-serif">
+              &ldquo;Sự hiện diện và những lời chúc tốt đẹp của Quý vị là món quà ý
+              nghĩa nhất dành cho chúng tôi trong ngày trọng đại này.&rdquo;
+            </p>
+            <p className="mt-6 text-stone-500 font-sans tracking-[0.2em] uppercase text-xs">
+              Trân trọng cảm ơn và rất hân hạnh được đón tiếp!
+            </p>
 
             <div className="pt-12">
               <motion.div
-                initial={{ scale: 0.8 }}
-                whileInView={{ scale: 1 }}
+                initial={{ scale: 0.85, opacity: 0 }}
+                whileInView={{ scale: 1, opacity: 1 }}
                 viewport={{ once: true }}
-                className="inline-block border border-amber-100 p-8"
+                transition={{ duration: 0.5 }}
+                className="inline-flex flex-col items-center border border-amber-200/70 rounded-2xl px-10 py-8 bg-white/50"
               >
-                <p className="text-stone-400 text-[10px] tracking-[0.5em] uppercase mb-2 font-sans">
+                <Monogram size={72} className="mb-4" />
+                <p className="text-stone-400 text-[10px] tracking-[0.4em] uppercase mb-3 font-sans">
                   Hành trình hạnh phúc bắt đầu từ đây
                 </p>
-                <p className="font-cursive text-3xl text-stone-800">
-                  Huy & Trinh
+                <p className="font-cursive text-4xl text-wedding-ink">
+                  {isName.trai} &amp; {isName.gai}
                 </p>
               </motion.div>
             </div>
           </motion.div>
 
-          <footer className="mt-20 pt-8 border-t border-stone-50 text-[10px] text-stone-400 tracking-widest uppercase font-sans">
-            © 2026 Huy & Trinh Wedding Invitation • Made with Love
+          <footer className="relative z-10 mt-16 pt-8 border-t border-amber-100/60 text-[10px] text-stone-400 tracking-widest uppercase font-sans">
+            © 2026 Huy &amp; Trinh Wedding Invitation • Made with Love
           </footer>
         </section>
       </div>

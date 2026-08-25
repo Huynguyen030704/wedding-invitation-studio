@@ -1,25 +1,32 @@
 @import "tailwindcss";
 
-@import url("https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap");
 
 @theme {
+  /* ===== Typography ===== */
   --font-cursive: "Great Vibes", cursive;
-  --font-serif: "Playfair Display", serif;
-  --color-wedding-gold: #b4975a;
-  --color-wedding-cream: #fdfbf7;
+  --font-serif: "Cormorant Garamond", "Playfair Display", serif;
+  --font-sans: "Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif;
 
-  /* Khai báo Keyframes chuẩn v4 */
+  /* ===== Bảng màu semantic (Luxury Editorial) ===== */
+  --color-wedding-gold: #b4975a;
+  --color-wedding-gold-soft: #c9ad78;
+  --color-wedding-champagne: #e7d6b4;
+  --color-wedding-cream: #fdfbf7;
+  --color-wedding-ivory: #f6f1e7;
+  --color-wedding-ink: #2a2521;
+  --color-wedding-charcoal: #1b1815;
+  --color-wedding-blush: #e3c4bd;
+  --color-wedding-rose: #c98a86;
+
+  /* ===== Keyframes ===== */
   @keyframes fall {
     0% {
       transform: translateY(-10vh) translateX(0) rotate(0deg);
       opacity: 0;
     }
-    10% {
-      opacity: 0.8;
-    }
-    90% {
-      opacity: 0.8;
-    }
+    10% { opacity: 0.75; }
+    90% { opacity: 0.75; }
     100% {
       transform: translateY(100vh) translateX(100px) rotate(360deg);
       opacity: 0;
@@ -27,31 +34,177 @@
   }
 
   @keyframes sway {
-    0% {
-      transform: translateX(0px) rotate(0deg);
-    }
-    50% {
-      transform: translateX(50px) rotate(20deg);
-    }
-    100% {
-      transform: translateX(0px) rotate(-20deg);
-    }
+    0% { transform: translateX(0px) rotate(0deg); }
+    50% { transform: translateX(50px) rotate(20deg); }
+    100% { transform: translateX(0px) rotate(-20deg); }
   }
 
   @keyframes slow-zoom {
     0% { transform: scale(1); }
-    100% { transform: scale(1.1); }
+    100% { transform: scale(1.12); }
   }
 
-  /* Khai báo Animation */
+  @keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  @keyframes float-hint {
+    0%, 100% { transform: translateY(0); opacity: 0.6; }
+    50% { transform: translateY(8px); opacity: 1; }
+  }
+
   --animate-petal-fall: fall 10s linear infinite;
   --animate-petal-sway: sway 3s ease-in-out infinite alternate;
   --animate-slow-zoom: slow-zoom 20s ease-in-out infinite alternate;
+  --animate-scroll-hint: float-hint 2s ease-in-out infinite;
 }
 
-/* Các class bổ trợ */
+@layer base {
+  body {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Vân giấy mịn phủ toàn trang — chất "in ấn cao cấp" */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 8000;
+    pointer-events: none;
+    opacity: 0.045;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
 @layer components {
+  /* Khung thẻ trang trọng dùng cho khối "Trân trọng kính mời" */
   .card-border {
-    @apply relative border border-[var(--color-wedding-gold)]/30 p-5 md:p-16 bg-white/50 backdrop-blur-sm shadow-xl;
+    @apply relative border border-[var(--color-wedding-gold)]/25 p-6 md:p-14 bg-white/60 backdrop-blur-sm shadow-[0_20px_60px_-30px_rgba(180,151,90,0.45)];
+  }
+
+  /* Nhãn eyebrow nhất quán trên toàn trang */
+  .eyebrow {
+    @apply font-sans text-[10px] md:text-xs uppercase tracking-[0.35em] font-semibold text-wedding-gold;
+  }
+
+  /* Đường kẻ vàng chuyển sắc mảnh */
+  .gold-rule {
+    @apply h-px w-full;
+    background: linear-gradient(
+      to right,
+      transparent,
+      var(--color-wedding-gold) 50%,
+      transparent
+    );
+  }
+
+  /* Chữ ánh kim */
+  .text-gilded {
+    background: linear-gradient(
+      100deg,
+      var(--color-wedding-gold) 0%,
+      var(--color-wedding-champagne) 45%,
+      var(--color-wedding-gold-soft) 55%,
+      var(--color-wedding-gold) 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shimmer 6s linear infinite;
+  }
+
+  /* Nhấc thẻ lên nhẹ khi hover — cảm giác cao cấp */
+  .hover-lift {
+    @apply transition-all duration-300 ease-out will-change-transform;
+  }
+  .hover-lift:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 26px 50px -24px rgba(180, 151, 90, 0.6);
+  }
+
+  /* Vệt sáng quét ngang khi hover nút (shimmer sweep) */
+  .btn-shimmer {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .btn-shimmer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      110deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.5) 50%,
+      transparent 70%
+    );
+    transform: translateX(-130%);
+    transition: transform 0.85s ease;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .btn-shimmer:hover::after {
+    transform: translateX(130%);
+  }
+
+  /* Scrollbar mảnh cho khối lời chúc */
+  .scroll-elegant {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(180, 151, 90, 0.5) transparent;
+  }
+  .scroll-elegant::-webkit-scrollbar { width: 6px; }
+  .scroll-elegant::-webkit-scrollbar-track { background: transparent; }
+  .scroll-elegant::-webkit-scrollbar-thumb {
+    background: rgba(180, 151, 90, 0.5);
+    border-radius: 9999px;
+  }
+}
+
+/* Bụi vàng lấp lánh (golden dust) */
+@keyframes dust {
+  0% {
+    transform: translateY(10px) scale(0.7);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-110px) scale(1.15);
+    opacity: 0;
+  }
+}
+.gold-dust {
+  animation-name: dust;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+  will-change: transform, opacity;
+}
+
+/* Tôn trọng người dùng tắt hiệu ứng chuyển động */
+@media (prefers-reduced-motion: reduce) {
+  .gold-dust {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+  .animate-petal-fall,
+  .animate-petal-sway,
+  .animate-slow-zoom,
+  .animate-scroll-hint,
+  .text-gilded {
+    animation: none !important;
+  }
+  .hover-lift:hover {
+    transform: none;
+  }
+  .btn-shimmer::after {
+    display: none;
   }
 }
