@@ -14,7 +14,7 @@ const giftAccounts = {
     label: "Nhà Trai",
     bankName: "Vietcombank",
     bankBin: "970436",
-    account: "0000000000",
+    account: "1042071300",
     holder: "NGUYEN NHUT HUY",
   },
   bride: {
