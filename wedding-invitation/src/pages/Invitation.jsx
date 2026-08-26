@@ -289,7 +289,10 @@ const Invitation = ({ type = "bride" }) => {
                     onClick={handleOpenInvitation}
                     className="btn-shimmer group inline-flex items-center gap-2 bg-white text-stone-900 px-9 md:px-11 py-4 rounded-full font-sans tracking-[0.2em] text-xs font-bold uppercase hover:bg-amber-50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-200 transition-all shadow-xl cursor-pointer"
                   >
-                    <Heart size={14} className="text-wedding-rose fill-current" />
+                    <Heart
+                      size={14}
+                      className="text-wedding-rose fill-current"
+                    />
                     Chạm để mở thiệp
                   </button>
                 </motion.div>
@@ -382,11 +385,13 @@ const Invitation = ({ type = "bride" }) => {
         {/* ===== ĐẾM NGƯỢC ===== */}
         <section className="py-12 md:py-16 bg-white relative z-20 border-b border-stone-100">
           <div className="max-w-3xl mx-auto px-4">
-            <p className="eyebrow text-center mb-8">Đếm ngược đến ngày trọng đại</p>
+            <p className="eyebrow text-center mb-8">
+              Đếm ngược đến ngày trọng đại
+            </p>
             <motion.div
               initial="hidden"
               whileInView="show"
-              viewport={{ once: true }}
+              viewport={{ once: false, amount: 0.2 }}
               transition={{ staggerChildren: 0.12 }}
               className="grid grid-cols-4 gap-3 md:gap-5"
             >
@@ -422,7 +427,7 @@ const Invitation = ({ type = "bride" }) => {
           <motion.div
             whileInView={{ opacity: 1, y: 0 }}
             initial={{ opacity: 0, y: 40 }}
-            viewport={{ once: true, margin: "-80px" }}
+            viewport={{ once: false, margin: "-80px" }}
             transition={{ duration: 0.6 }}
             className="card-border rounded-[2rem] text-center overflow-hidden"
           >
@@ -440,7 +445,10 @@ const Invitation = ({ type = "bride" }) => {
             <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 text-left">
               {/* Thời gian */}
               <div className="hover-lift rounded-2xl border border-amber-100 bg-white/70 p-6 md:p-8 text-center">
-                <Calendar className="mx-auto text-wedding-gold mb-4" size={30} />
+                <Calendar
+                  className="mx-auto text-wedding-gold mb-4"
+                  size={30}
+                />
                 <p className="eyebrow mb-3">Thời gian làm lễ</p>
                 <p className="text-xl md:text-2xl text-wedding-ink font-serif font-semibold leading-snug">
                   {config.locationCalendar.split(" - ").map((part, i) => (
@@ -511,7 +519,7 @@ const Invitation = ({ type = "bride" }) => {
                   key={f.side}
                   initial={{ opacity: 0, x: f.x }}
                   whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
+                  viewport={{ once: false, amount: 0.2 }}
                   transition={{ duration: 0.6 }}
                   className="hover-lift text-center rounded-3xl border border-amber-100 bg-white/70 px-6 py-10 md:px-10 shadow-[0_20px_60px_-40px_rgba(180,151,90,0.5)]"
                 >
@@ -576,7 +584,10 @@ const Invitation = ({ type = "bride" }) => {
                       { required: true, message: "Vui lòng nhập tên của bạn!" },
                     ]}
                   >
-                    <Input placeholder="Nhập tên của bạn..." className="font-sans" />
+                    <Input
+                      placeholder="Nhập tên của bạn..."
+                      className="font-sans"
+                    />
                   </Form.Item>
 
                   <Form.Item
@@ -695,7 +706,7 @@ const Invitation = ({ type = "bride" }) => {
             <motion.div
               initial={{ opacity: 0, scale: 0.96 }}
               whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
+              viewport={{ once: false, amount: 0.2 }}
               transition={{ duration: 0.6 }}
               className="relative w-full aspect-video md:aspect-21/9 rounded-2xl overflow-hidden shadow-2xl border-4 border-white ring-1 ring-amber-100"
             >
@@ -733,7 +744,7 @@ const Invitation = ({ type = "bride" }) => {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9 }}
-            viewport={{ once: true }}
+            viewport={{ once: false, amount: 0.2 }}
             className="relative z-10 max-w-2xl mx-auto"
           >
             <OrnamentalDivider className="mb-8" />
@@ -743,8 +754,9 @@ const Invitation = ({ type = "bride" }) => {
             </h2>
 
             <p className="text-lg md:text-xl text-stone-600 leading-relaxed italic font-serif">
-              &ldquo;Sự hiện diện và những lời chúc tốt đẹp của Quý vị là món quà ý
-              nghĩa nhất dành cho chúng tôi trong ngày trọng đại này.&rdquo;
+              &ldquo;Sự hiện diện và những lời chúc tốt đẹp của Quý vị là món
+              quà ý nghĩa nhất dành cho chúng tôi trong ngày trọng đại
+              này.&rdquo;
             </p>
             <p className="mt-6 text-stone-500 font-sans tracking-[0.2em] uppercase text-xs">
               Trân trọng cảm ơn và rất hân hạnh được đón tiếp!
@@ -754,7 +766,7 @@ const Invitation = ({ type = "bride" }) => {
               <motion.div
                 initial={{ scale: 0.85, opacity: 0 }}
                 whileInView={{ scale: 1, opacity: 1 }}
-                viewport={{ once: true }}
+                viewport={{ once: false, amount: 0.2 }}
                 transition={{ duration: 0.5 }}
                 className="inline-flex flex-col items-center border border-amber-200/70 rounded-2xl px-10 py-8 bg-white/50"
               >

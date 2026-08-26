@@ -6,24 +6,21 @@ import { motion } from "framer-motion";
  * Dùng nhất quán giữa các section để tạo nhịp thị giác.
  */
 export const OrnamentalDivider = ({ className = "", tone = "gold" }) => {
-  const line =
-    tone === "light"
-      ? "bg-gradient-to-r from-transparent to-white/40"
-      : "bg-gradient-to-r from-transparent to-wedding-gold/70";
+  const toColor = tone === "light" ? "to-white/40" : "to-wedding-gold/70";
   const heart = tone === "light" ? "text-amber-200/80" : "text-wedding-rose";
 
   return (
     <motion.div
       initial="hidden"
       whileInView="show"
-      viewport={{ once: true }}
+      viewport={{ once: false, amount: 0.4 }}
       transition={{ staggerChildren: 0.15 }}
       className={`flex items-center justify-center gap-4 ${className}`}
     >
       <motion.span
         variants={{ hidden: { scaleX: 0 }, show: { scaleX: 1 } }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className={`h-px w-12 md:w-20 origin-right ${line}`}
+        className={`h-px w-12 md:w-20 origin-right bg-gradient-to-r from-transparent ${toColor}`}
       />
       <motion.span
         variants={{
@@ -37,7 +34,7 @@ export const OrnamentalDivider = ({ className = "", tone = "gold" }) => {
       <motion.span
         variants={{ hidden: { scaleX: 0 }, show: { scaleX: 1 } }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className={`h-px w-12 md:w-20 origin-left ${line} rotate-180`}
+        className={`h-px w-12 md:w-20 origin-left bg-gradient-to-l from-transparent ${toColor}`}
       />
     </motion.div>
   );
@@ -57,7 +54,7 @@ export const RevealWords = ({
     <motion.span
       initial="hidden"
       whileInView="show"
-      viewport={{ once: true, margin: "-60px" }}
+      viewport={{ once: false, margin: "-60px" }}
       transition={{ staggerChildren: stagger, delayChildren: 0.05 }}
       className={`inline-flex flex-wrap justify-center gap-x-[0.28em] ${className}`}
     >
@@ -107,7 +104,7 @@ export const SectionHeading = ({
     <motion.div
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
-      viewport={{ once: true, margin: "-80px" }}
+      viewport={{ once: false, margin: "-80px" }}
       transition={{ duration: 0.6 }}
       className={`text-center ${className}`}
     >

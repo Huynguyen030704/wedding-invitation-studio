@@ -131,7 +131,7 @@ const WishesSection = () => {
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: false, amount: 0.2 }}
               className="mb-8"
             >
               <p className="eyebrow !text-wedding-champagne mb-3">Yêu thương gửi trao</p>
@@ -204,7 +204,7 @@ const WishesSection = () => {
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: false, amount: 0.2 }}
             className="bg-white/[0.04] border border-white/10 p-8 md:p-12 rounded-[28px] backdrop-blur-xl shadow-[0_30px_60px_-30px_rgba(0,0,0,0.6)]"
           >
             <div className="text-center mb-8">

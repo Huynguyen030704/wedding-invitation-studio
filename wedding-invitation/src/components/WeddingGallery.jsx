@@ -64,7 +64,7 @@ const WeddingGallery = () => {
                       y: 0,
                       clipPath: "inset(0 0 0% 0)",
                     }}
-                    viewport={{ once: true, margin: "-40px" }}
+                    viewport={{ once: false, margin: "-40px" }}
                     transition={{
                       delay: Math.min(idx * 0.06, 0.35),
                       duration: 0.7,
