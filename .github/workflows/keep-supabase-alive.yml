@@ -1,0 +1,37 @@
+name: Keep Supabase Alive
+
+# Ping Supabase định kỳ để dự án free không bị tạm dừng sau 7 ngày không hoạt động.
+on:
+  schedule:
+    - cron: "0 6 */3 * *" # 06:00 UTC mỗi 3 ngày (buffer trước mốc 7 ngày của Supabase)
+  workflow_dispatch: {} # Cho phép bấm chạy tay để kiểm tra
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase REST API
+        env:
+          SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_KEY" ]; then
+            echo "❌ Thiếu secret VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY."
+            exit 1
+          fi
+
+          code=$(curl -s -o /dev/null -w "%{http_code}" \
+            "${SUPABASE_URL}/rest/v1/rsvps?select=id&limit=1" \
+            -H "apikey: ${SUPABASE_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_KEY}")
+
+          echo "Supabase trả về HTTP $code"
+
+          # 2xx–4xx: request đã tới được dự án => dự án đang active (không bị pause).
+          # 5xx / lỗi kết nối: dự án có thể đang pause hoặc gặp sự cố.
+          if [ "$code" -ge 200 ] && [ "$code" -lt 500 ]; then
+            echo "✅ Dự án Supabase vẫn hoạt động."
+          else
+            echo "❌ Supabase không phản hồi bình thường (HTTP $code) — có thể đang pause."
+            exit 1
+          fi
