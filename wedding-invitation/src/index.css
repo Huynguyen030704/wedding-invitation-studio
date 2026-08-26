@@ -113,7 +113,10 @@
     background-size: 200% auto;
     -webkit-background-clip: text;
     background-clip: text;
+    -webkit-text-fill-color: transparent;
     color: transparent;
+    /* Nới hộp nền để nét thanh & đuôi bay của font script không bị cắt */
+    padding: 0.16em 0.1em;
     animation: shimmer 6s linear infinite;
   }
 
