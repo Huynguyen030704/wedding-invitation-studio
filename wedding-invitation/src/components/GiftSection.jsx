@@ -15,7 +15,7 @@ const giftAccounts = {
     bankName: "Vietcombank",
     bankBin: "970436",
     account: "1042071300",
-    holder: "NGUYEN NHUT HUY",
+    holder: "NGUYEN THANH NHUT HUY",
     addInfo: "Mung cuoi Nhut Huy",
   },
   bride: {
@@ -23,7 +23,7 @@ const giftAccounts = {
     bankName: "Vietcombank",
     bankBin: "970436",
     account: "1030357141",
-    holder: "PHAM MAI TRINH",
+    holder: "PHAM THI MAI TRINH",
     addInfo: "Mung cuoi Mai Trinh",
   },
 };

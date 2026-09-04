@@ -68,7 +68,7 @@ const Invitation = ({ type = "bride" }) => {
   const isGroom = type === "groom";
   const config = {
     ceremonyName: isGroom ? "Lễ Tân Hôn" : "Lễ Vu Quy",
-    targetDate: isGroom ? "2026-09-30T11:00:00" : "2026-09-29T09:00:00",
+    targetDate: isGroom ? "2026-09-30T09:00:00" : "2026-09-29T16:00:00", // Nhà Trai 09:00 Nhà Gái 15:00
     bannerDate: isGroom ? "30 . 09 . 2026" : "29 . 09 . 2026",
     locationName: isGroom ? "Tư Gia Nhà Trai" : "Tư Gia Nhà Gái",
     locationAddress: isGroom
