@@ -216,6 +216,8 @@ const Invitation = ({ type = "bride" }) => {
                 src={`${import.meta.env.BASE_URL}images/133A1281.JPG`}
                 className="w-full h-full object-cover object-center"
                 alt=""
+                fetchPriority="high"
+                decoding="async"
               />
               <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-black/55" />
             </div>
@@ -315,6 +317,8 @@ const Invitation = ({ type = "bride" }) => {
               src={`${import.meta.env.BASE_URL}images/133A1281.JPG`}
               className="w-full h-full object-cover object-center animate-slow-zoom"
               alt="Ảnh cưới Huy và Trinh"
+              fetchPriority="high"
+              decoding="async"
             />
           </motion.div>
           {/* Lớp phủ chuyển sắc tinh tế thay cho nền đen phẳng */}
@@ -356,7 +360,7 @@ const Invitation = ({ type = "bride" }) => {
 
           {/* Gợi ý cuộn xuống */}
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 text-white/70 animate-scroll-hint">
-            <ChevronDown size={26} />
+            <ChevronDown size={26} aria-hidden="true" />
           </div>
 
           {isOpen && (
@@ -413,7 +417,7 @@ const Invitation = ({ type = "bride" }) => {
                   <div className="text-3xl md:text-5xl font-bold text-wedding-gold font-sans tabular-nums leading-none">
                     {pad2(item.value)}
                   </div>
-                  <div className="mt-2 text-[9px] md:text-xs uppercase tracking-[0.2em] text-stone-400 font-sans font-semibold">
+                  <div className="mt-2 text-[10px] md:text-xs uppercase tracking-[0.2em] text-stone-500 font-sans font-semibold">
                     {item.label}
                   </div>
                 </motion.div>
@@ -690,8 +694,8 @@ const Invitation = ({ type = "bride" }) => {
         <WishesSection />
 
         {/* ===== HỘP MỪNG CƯỚI ===== */}
-        {/* TẠM ẨN: chờ số tài khoản thật. Điền STK trong GiftSection.jsx rồi bỏ comment dòng dưới. */}
-        {/* <GiftSection /> */}
+        {/* Tự mở đúng tab (Nhà Trai/Nhà Gái) theo link đang xem */}
+        <GiftSection type={type} />
 
         {/* ===== BẢN ĐỒ CHỈ ĐƯỜNG ===== */}
         <section className="py-20 md:py-28 px-4 bg-white">
@@ -737,7 +741,7 @@ const Invitation = ({ type = "bride" }) => {
         {/* ===== LỜI CẢM ƠN & FOOTER ===== */}
         <section className="relative py-20 md:py-28 px-6 text-center bg-wedding-ivory overflow-hidden border-t border-amber-100/60">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 opacity-[0.04] pointer-events-none">
-            <Heart size={300} className="text-wedding-gold" />
+            <Heart size={300} className="text-wedding-gold" aria-hidden="true" />
           </div>
 
           <motion.div

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Segmented, message, ConfigProvider } from "antd";
-import { Copy, Gift, QrCode } from "lucide-react";
+import { Copy, Check, Gift, QrCode } from "lucide-react";
 import { motion } from "framer-motion";
 import { SectionHeading } from "./Ornaments";
 
@@ -16,28 +16,35 @@ const giftAccounts = {
     bankBin: "970436",
     account: "1042071300",
     holder: "NGUYEN NHUT HUY",
+    addInfo: "Mung cuoi Nhut Huy",
   },
   bride: {
     label: "Nhà Gái",
     bankName: "Vietcombank",
     bankBin: "970436",
-    account: "0000000000",
+    account: "1030357141",
     holder: "PHAM MAI TRINH",
+    addInfo: "Mung cuoi Mai Trinh",
   },
 };
 
-const qrUrl = ({ bankBin, account, holder }) =>
+// VietQR: accountName = tên hiển thị, addInfo = nội dung chuyển khoản điền sẵn
+const qrUrl = ({ bankBin, account, holder, addInfo }) =>
   `https://img.vietqr.io/image/${bankBin}-${account}-compact2.png?accountName=${encodeURIComponent(
     holder,
-  )}`;
+  )}&addInfo=${encodeURIComponent(addInfo)}`;
 
-const GiftSection = () => {
-  const [side, setSide] = useState("groom");
+const GiftSection = ({ type = "groom" }) => {
+  // Mặc định mở đúng bên theo link đang xem (thiệp nhà gái → tab Nhà Gái)
+  const [side, setSide] = useState(type === "bride" ? "bride" : "groom");
+  const [copied, setCopied] = useState(false);
   const acc = giftAccounts[side];
 
   const copyAccount = async () => {
     try {
       await navigator.clipboard.writeText(acc.account);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
       message.success("Đã sao chép số tài khoản!");
     } catch {
       message.info(`Số tài khoản: ${acc.account}`);
@@ -135,9 +142,22 @@ const GiftSection = () => {
                   </span>
                   <button
                     onClick={copyAccount}
-                    className="btn-shimmer inline-flex items-center gap-1.5 rounded-full bg-wedding-gold/10 text-wedding-gold border border-wedding-gold/30 px-3 py-1.5 text-xs font-sans font-semibold hover:bg-wedding-gold hover:text-white transition-all cursor-pointer"
+                    aria-label={`Sao chép số tài khoản ${acc.account}`}
+                    className={`btn-shimmer inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-sans font-semibold transition-all active:scale-95 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wedding-gold ${
+                      copied
+                        ? "bg-emerald-500 text-white border-emerald-500"
+                        : "bg-wedding-gold/10 text-wedding-gold border-wedding-gold/30 hover:bg-wedding-gold hover:text-white"
+                    }`}
                   >
-                    <Copy size={13} /> Sao chép
+                    {copied ? (
+                      <>
+                        <Check size={13} /> Đã chép
+                      </>
+                    ) : (
+                      <>
+                        <Copy size={13} /> Sao chép
+                      </>
+                    )}
                   </button>
                 </div>
               </div>

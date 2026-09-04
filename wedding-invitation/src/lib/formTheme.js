@@ -45,4 +45,5 @@ export const goldButtonClass =
   "btn-shimmer w-full !h-14 border-none rounded-2xl font-sans font-bold tracking-widest uppercase " +
   "text-stone-900 bg-gradient-to-r from-wedding-champagne via-wedding-gold to-wedding-gold-soft " +
   "hover:brightness-110 active:scale-[0.98] transition-all " +
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wedding-gold " +
   "flex items-center justify-center gap-2 shadow-[0_12px_28px_-8px_rgba(180,151,90,0.55)] cursor-pointer";
