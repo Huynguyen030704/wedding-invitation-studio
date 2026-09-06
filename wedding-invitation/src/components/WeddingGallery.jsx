@@ -9,7 +9,7 @@ const galleryImages = [
   `${BASE}images/133A1281.JPG`,
   `${BASE}images/133A1217.JPG`,
   `${BASE}images/0429.JPG`,
-  `${BASE}images/133A1254.JPG`,
+  `${BASE}images/133A1285.JPG`,
   `${BASE}images/133A1318.JPG`,
   `${BASE}images/0434.JPG`,
   `${BASE}images/133A1331.JPG`,

@@ -75,8 +75,8 @@ const Invitation = ({ type = "bride" }) => {
       ? "29, Ấp Bồ Đề, Xã Gia Thuận, Tỉnh Đồng Tháp"
       : "Cầu số 6, Ấp Xóm Mới, Xã Gia Thuận, Tỉnh Đồng Tháp",
     locationCalendar: isGroom
-      ? "11:00 Trưa - 30 Tháng 09, 2026"
-      : "09:00 Sáng - 29 Tháng 09, 2026",
+      ? "09:00 Sáng - 30 Tháng 09, 2026"
+      : "15:00 Chiều - 29 Tháng 09, 2026",
     locationCalendarLunar: isGroom
       ? "(Mùng 20 tháng 08 Âm Lịch)"
       : "(Mùng 19 tháng 08 Âm Lịch)",
